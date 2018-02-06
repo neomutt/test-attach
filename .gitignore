@@ -2,3 +2,4 @@ main
 .dep
 .obj
 tags
+file-*
