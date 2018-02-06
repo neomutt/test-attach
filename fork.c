@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +24,9 @@ void close_pid(int pid)
   {
     if (children[i].pid == pid)
     {
-      printf("Closing file %s for child %d (pid=%d)\n", children[i].file, i, pid);
+      printf("Removing file %s for child %d (pid=%d)\n", children[i].file, i, pid);
+      if (unlink(children[i].file) < 0)
+        printf("Error unlinking '%s' -- %s\n", children[i].file, strerror(errno));
       free((void*) children[i].file);
       children[i].file = NULL;
       children[i].pid = 0;
@@ -159,7 +162,9 @@ int main()
 
   printf("\033[1;32mwaiting for %d children\033[0m\n", open_children);
   while (open_children > 0)
+  {
     parent();
+  }
 
   printf("\033[1;32mall children closed\033[0m\n");
   free(children);
